@@ -1,0 +1,4223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#070b12">
+<title>AiTraderPlus — AI Trading Terminal</title>
+
+<style>
+:root{
+  --bg:#070b12;
+  --panel:#0b111b;
+  --panel2:#0e1622;
+  --panel3:#111c2b;
+  --border:#1d2a3b;
+  --text:#e7edf5;
+  --muted:#8190a5;
+  --green:#19d48a;
+  --green2:#0ea66c;
+  --red:#ff5570;
+  --yellow:#f4c95d;
+  --blue:#4d9cff;
+  --purple:#a875ff;
+  --cyan:#35d7ff;
+  --shadow:0 12px 40px rgba(0,0,0,.35);
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+button,input,select,textarea{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+.app{
+  display:grid;
+  grid-template-rows:58px 1fr;
+  height:100vh;
+}
+
+/* TOP BAR */
+
+.topbar{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  padding:0 18px;
+  background:#080d15;
+  border-bottom:1px solid var(--border);
+  z-index:20;
+}
+
+.logo{
+  font-size:18px;
+  font-weight:800;
+  letter-spacing:-.5px;
+  min-width:150px;
+}
+
+.logo span{
+  color:var(--cyan);
+}
+
+.account-selector{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 10px;
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:7px;
+  color:var(--text);
+}
+
+.account-selector select{
+  background:transparent;
+  color:var(--text);
+  border:0;
+  outline:0;
+}
+
+.stats{
+  display:flex;
+  gap:22px;
+  flex:1;
+}
+
+.stat{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.stat-label{
+  color:var(--muted);
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.7px;
+}
+
+.stat-value{
+  font-size:13px;
+  font-weight:700;
+}
+
+.top-actions{
+  display:flex;
+  gap:8px;
+}
+
+.icon-btn{
+  width:34px;
+  height:34px;
+  border:1px solid var(--border);
+  border-radius:7px;
+  background:var(--panel2);
+  color:var(--muted);
+}
+
+.icon-btn:hover{
+  color:white;
+  border-color:#34465f;
+}
+
+.deposit{
+  border:1px solid #145b46;
+  background:#0b2a22;
+  color:var(--green);
+  padding:8px 12px;
+  border-radius:7px;
+  font-weight:700;
+}
+
+/* MAIN */
+
+.main{
+  display:grid;
+  grid-template-columns:220px minmax(500px,1fr) 330px;
+  min-height:0;
+}
+
+/* WATCHLIST */
+
+.watchlist{
+  background:var(--panel);
+  border-right:1px solid var(--border);
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+}
+
+.section-header{
+  height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 12px;
+  border-bottom:1px solid var(--border);
+}
+
+.section-title{
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.7px;
+  text-transform:uppercase;
+}
+
+.small-btn{
+  border:1px solid var(--border);
+  background:var(--panel2);
+  color:var(--muted);
+  border-radius:5px;
+  padding:4px 7px;
+}
+
+.search{
+  margin:10px;
+  padding:8px 9px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:#080d15;
+  color:white;
+  outline:none;
+  width:calc(100% - 20px);
+}
+
+.symbols{
+  overflow:auto;
+  flex:1;
+}
+
+.symbol{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:2px;
+  padding:10px 12px;
+  border-bottom:1px solid rgba(255,255,255,.025);
+  cursor:pointer;
+}
+
+.symbol:hover,
+.symbol.active{
+  background:var(--panel3);
+}
+
+.symbol-name{
+  font-weight:700;
+  font-size:12px;
+}
+
+.symbol-desc{
+  color:var(--muted);
+  font-size:10px;
+  margin-top:2px;
+}
+
+.symbol-price{
+  text-align:right;
+  font-size:12px;
+  font-weight:700;
+}
+
+.symbol-change{
+  text-align:right;
+  font-size:10px;
+}
+
+.up{color:var(--green)}
+.down{color:var(--red)}
+.warn{color:var(--yellow)}
+
+/* CENTER */
+
+.center{
+  min-width:0;
+  min-height:0;
+  display:grid;
+  grid-template-rows:48px 1fr 235px;
+  background:#070c14;
+}
+
+.chart-toolbar{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:0 10px;
+  border-bottom:1px solid var(--border);
+  overflow:auto;
+}
+
+.chart-symbol{
+  font-size:14px;
+  font-weight:800;
+  margin-right:8px;
+}
+
+.tf{
+  padding:5px 8px;
+  border-radius:5px;
+  background:transparent;
+  color:var(--muted);
+  border:0;
+  font-size:11px;
+}
+
+.tf:hover,
+.tf.active{
+  color:white;
+  background:var(--panel3);
+}
+
+.chart-actions{
+  margin-left:auto;
+  display:flex;
+  gap:5px;
+}
+
+.chart-area{
+  position:relative;
+  min-height:0;
+  overflow:hidden;
+  background:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:55px 55px;
+}
+
+#chart{
+  width:100%;
+  height:100%;
+  display:block;
+}
+
+.chart-overlay{
+  position:absolute;
+  left:14px;
+  top:12px;
+  pointer-events:none;
+}
+
+.chart-info{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.chart-price{
+  font-size:17px;
+  font-weight:800;
+}
+
+.chart-meta{
+  font-size:10px;
+  color:var(--muted);
+}
+
+/* BOTTOM */
+
+.bottom{
+  border-top:1px solid var(--border);
+  min-height:0;
+  background:var(--panel);
+}
+
+.tabs{
+  display:flex;
+  height:38px;
+  border-bottom:1px solid var(--border);
+}
+
+.tab{
+  padding:0 14px;
+  border:0;
+  background:transparent;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:700;
+}
+
+.tab.active{
+  color:white;
+  border-bottom:2px solid var(--cyan);
+}
+
+.tab-content{
+  height:calc(100% - 38px);
+  overflow:auto;
+  padding:10px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:11px;
+}
+
+th{
+  text-align:left;
+  color:var(--muted);
+  font-size:9px;
+  text-transform:uppercase;
+  letter-spacing:.6px;
+  font-weight:700;
+  padding:5px 8px;
+}
+
+td{
+  padding:8px;
+  border-top:1px solid rgba(255,255,255,.035);
+}
+
+.empty{
+  color:var(--muted);
+  padding:30px;
+  text-align:center;
+}
+
+/* AI */
+
+.ai{
+  background:var(--panel);
+  border-left:1px solid var(--border);
+  min-height:0;
+  display:grid;
+  grid-template-rows:48px 1fr auto;
+}
+
+.ai-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 13px;
+  border-bottom:1px solid var(--border);
+}
+
+.ai-title{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:800;
+  font-size:13px;
+}
+
+.ai-dot{
+  width:8px;
+  height:8px;
+  background:var(--purple);
+  border-radius:50%;
+  box-shadow:0 0 10px var(--purple);
+}
+
+.ai-body{
+  overflow:auto;
+  padding:13px;
+}
+
+.ai-card{
+  border:1px solid var(--border);
+  background:#0d1520;
+  border-radius:9px;
+  padding:11px;
+  margin-bottom:10px;
+}
+
+.ai-card-title{
+  color:var(--muted);
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.7px;
+  margin-bottom:9px;
+}
+
+.ai-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+
+.ai-metric{
+  background:#09111b;
+  border-radius:6px;
+  padding:8px;
+}
+
+.ai-metric-label{
+  color:var(--muted);
+  font-size:9px;
+}
+
+.ai-metric-value{
+  margin-top:3px;
+  font-weight:800;
+  font-size:12px;
+}
+
+.ai-message{
+  line-height:1.5;
+  color:#c8d1dd;
+  font-size:11px;
+}
+
+.ai-input{
+  border-top:1px solid var(--border);
+  padding:10px;
+  display:flex;
+  gap:7px;
+}
+
+.ai-input textarea{
+  flex:1;
+  height:42px;
+  resize:none;
+  border:1px solid var(--border);
+  background:#080d15;
+  color:white;
+  border-radius:7px;
+  padding:8px;
+  outline:none;
+}
+
+.ai-send{
+  width:43px;
+  border:0;
+  border-radius:7px;
+  background:var(--purple);
+  color:white;
+  font-weight:900;
+}
+
+/* BUTTONS */
+
+.primary{
+  background:#1685ff;
+  color:white;
+  border:0;
+  padding:8px 12px;
+  border-radius:6px;
+  font-weight:700;
+}
+
+.green-btn{
+  background:#0d704e;
+  color:white;
+  border:0;
+  padding:8px 12px;
+  border-radius:6px;
+  font-weight:800;
+}
+
+.red-btn{
+  background:#7d2033;
+  color:white;
+  border:0;
+  padding:8px 12px;
+  border-radius:6px;
+  font-weight:800;
+}
+
+.outline-btn{
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:7px 10px;
+  border-radius:6px;
+}
+
+/* MODAL */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:100;
+  backdrop-filter:blur(6px);
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modal-box{
+  width:min(620px,calc(100% - 30px));
+  max-height:90vh;
+  overflow:auto;
+  background:#0c141f;
+  border:1px solid var(--border);
+  border-radius:12px;
+  box-shadow:var(--shadow);
+}
+
+.modal-header{
+  display:flex;
+  justify-content:space-between;
+  padding:15px;
+  border-bottom:1px solid var(--border);
+}
+
+.modal-body{
+  padding:15px;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+
+.field label{
+  color:var(--muted);
+  font-size:10px;
+  text-transform:uppercase;
+}
+
+.field input,
+.field select{
+  background:#080d15;
+  color:white;
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:9px;
+  outline:none;
+}
+
+.modal-footer{
+  padding:12px 15px;
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  border-top:1px solid var(--border);
+}
+
+/* TOAST */
+
+.toast-container{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:300;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.toast{
+  min-width:270px;
+  max-width:380px;
+  padding:12px;
+  border:1px solid var(--border);
+  background:#0c141f;
+  border-radius:8px;
+  box-shadow:var(--shadow);
+  font-size:12px;
+  animation:toastIn .2s ease;
+}
+
+@keyframes toastIn{
+  from{transform:translateY(10px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+/* MOBILE */
+
+@media(max-width:1100px){
+  .main{
+    grid-template-columns:190px minmax(400px,1fr);
+  }
+
+  .ai{
+    display:none;
+  }
+
+  .stats{
+    gap:10px;
+  }
+}
+
+@media(max-width:760px){
+  html,body{
+    overflow:auto;
+  }
+
+  .app{
+    height:auto;
+    min-height:100vh;
+  }
+
+  .topbar{
+    height:auto;
+    min-height:58px;
+    flex-wrap:wrap;
+    padding:9px;
+  }
+
+  .logo{
+    min-width:auto;
+  }
+
+  .stats{
+    order:3;
+    width:100%;
+    overflow:auto;
+  }
+
+  .main{
+    display:block;
+  }
+
+  .watchlist{
+    height:180px;
+    border-right:0;
+    border-bottom:1px solid var(--border);
+  }
+
+  .symbols{
+    display:flex;
+    overflow-x:auto;
+  }
+
+  .symbol{
+    min-width:145px;
+  }
+
+  .center{
+    height:700px;
+  }
+
+  .ai{
+    display:grid;
+    height:550px;
+    border-left:0;
+    border-top:1px solid var(--border);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- TOP BAR -->
+<header class="topbar">
+
+  <div class="logo">
+    AiTrader<span>Plus</span>
+  </div>
+
+  <div class="account-selector">
+    <span>●</span>
+    <select id="accountSelect">
+      <option value="paper">Paper Trading</option>
+      <option value="demo">Demo Account</option>
+      <option value="ai">AI Trading — Safe Mode</option>
+    </select>
+  </div>
+
+  <div class="stats">
+
+    <div class="stat">
+      <span class="stat-label">Balance</span>
+      <span class="stat-value" id="balance">$100,000.00</span>
+    </div>
+
+    <div class="stat">
+      <span class="stat-label">Equity</span>
+      <span class="stat-value" id="equity">$100,000.00</span>
+    </div>
+
+    <div class="stat">
+      <span class="stat-label">Free Margin</span>
+      <span class="stat-value" id="freeMargin">$100,000.00</span>
+    </div>
+
+    <div class="stat">
+      <span class="stat-label">Margin Level</span>
+      <span class="stat-value" id="marginLevel">∞</span>
+    </div>
+
+    <div class="stat">
+      <span class="stat-label">Unrealized P&L</span>
+      <span class="stat-value up" id="unrealized">$0.00</span>
+    </div>
+
+  </div>
+
+  <div class="top-actions">
+    <button class="deposit" onclick="showDeposit()">Deposit</button>
+    <button class="icon-btn" onclick="showNotifications()">🔔</button>
+    <button class="icon-btn" onclick="showSettings()">⚙</button>
+  </div>
+
+</header>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- WATCHLIST -->
+<section class="watchlist">
+
+  <div class="section-header">
+    <div class="section-title">Watchlist</div>
+    <button class="small-btn" onclick="addSymbol()">＋</button>
+  </div>
+
+  <input
+    class="search"
+    id="symbolSearch"
+    placeholder="Search symbol..."
+    oninput="renderWatchlist()"
+  >
+
+  <div class="symbols" id="watchlist"></div>
+
+</section>
+
+<!-- CENTER -->
+<section class="center">
+
+  <div class="chart-toolbar">
+
+    <div class="chart-symbol" id="chartSymbol">EUR/USD</div>
+
+    <button class="tf active" data-tf="1" onclick="changeTF(this)">M1</button>
+    <button class="tf" data-tf="5" onclick="changeTF(this)">M5</button>
+    <button class="tf" data-tf="15" onclick="changeTF(this)">M15</button>
+    <button class="tf" data-tf="30" onclick="changeTF(this)">M30</button>
+    <button class="tf" data-tf="60" onclick="changeTF(this)">H1</button>
+    <button class="tf" data-tf="240" onclick="changeTF(this)">H4</button>
+    <button class="tf" data-tf="1440" onclick="changeTF(this)">D1</button>
+
+    <div class="chart-actions">
+      <button class="small-btn" onclick="openOrderModal('BUY')">BUY</button>
+      <button class="small-btn" onclick="openOrderModal('SELL')">SELL</button>
+      <button class="small-btn" onclick="openIndicatorModal()">Indicators</button>
+      <button class="small-btn" onclick="resetChart()">Reset</button>
+    </div>
+
+  </div>
+
+  <div class="chart-area">
+
+    <canvas id="chart"></canvas>
+
+    <div class="chart-overlay">
+      <div class="chart-info">
+        <div class="chart-price" id="chartPrice">1.17000</div>
+        <div class="chart-meta" id="chartMeta">EUR/USD · M15 · Paper Market</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM PANEL -->
+  <div class="bottom">
+
+    <div class="tabs">
+
+      <button class="tab active" onclick="showTab('positions',this)">
+        Positions
+      </button>
+
+      <button class="tab" onclick="showTab('orders',this)">
+        Orders
+      </button>
+
+      <button class="tab" onclick="showTab('history',this)">
+        History
+      </button>
+
+      <button class="tab" onclick="showTab('portfolio',this)">
+        Portfolio
+      </button>
+
+      <button class="tab" onclick="showTab('journal',this)">
+        Journal
+      </button>
+
+      <button class="tab" onclick="showTab('strategy',this)">
+        Strategy Lab
+      </button>
+
+    </div>
+
+    <div class="tab-content" id="tabContent"></div>
+
+  </div>
+
+</section>
+
+<!-- AI PANEL -->
+<aside class="ai">
+
+  <div class="ai-header">
+
+    <div class="ai-title">
+      <span class="ai-dot"></span>
+      AI Copilot
+    </div>
+
+    <button class="small-btn" onclick="runAnalysis()">
+      Analyze
+    </button>
+
+  </div>
+
+  <div class="ai-body" id="aiBody">
+
+    <div class="ai-card">
+
+      <div class="ai-card-title">
+        Market Analysis
+      </div>
+
+      <div class="ai-grid">
+
+        <div class="ai-metric">
+          <div class="ai-metric-label">Trend</div>
+          <div class="ai-metric-value up" id="aiTrend">
+            Bullish
+          </div>
+        </div>
+
+        <div class="ai-metric">
+          <div class="ai-metric-label">Momentum</div>
+          <div class="ai-metric-value" id="aiMomentum">
+            Strong
+          </div>
+        </div>
+
+        <div class="ai-metric">
+          <div class="ai-metric-label">Volatility</div>
+          <div class="ai-metric-value" id="aiVolatility">
+            Medium
+          </div>
+        </div>
+
+        <div class="ai-metric">
+          <div class="ai-metric-label">Risk</div>
+          <div class="ai-metric-value warn" id="aiRisk">
+            Medium
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="ai-card">
+
+      <div class="ai-card-title">
+        Key Levels
+      </div>
+
+      <div class="ai-grid">
+
+        <div class="ai-metric">
+          <div class="ai-metric-label">Support</div>
+          <div class="ai-metric-value" id="aiSupport">
+            1.16500
+          </div>
+        </div>
+
+        <div class="ai-metric">
+          <div class="ai-metric-label">Resistance</div>
+          <div class="ai-metric-value" id="aiResistance">
+            1.17500
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="ai-card">
+
+      <div class="ai-card-title">
+        AI Assessment
+      </div>
+
+      <div class="ai-message" id="aiAssessment">
+        The simulated market is currently showing a bullish structure.
+        Price is trading above the short-term moving average.
+        Confirmation is required before any trade proposal.
+      </div>
+
+    </div>
+
+    <div class="ai-card">
+
+      <div class="ai-card-title">
+        AI Actions
+      </div>
+
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+
+        <button class="primary" onclick="runAnalysis()">
+          Analyze
+        </button>
+
+        <button class="outline-btn" onclick="createAIProposal()">
+          Create Trade
+        </button>
+
+        <button class="outline-btn" onclick="openStrategyBuilder()">
+          Build Strategy
+        </button>
+
+        <button class="outline-btn" onclick="runBacktest()">
+          Backtest
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="ai-input">
+
+    <textarea
+      id="aiInput"
+      placeholder="Ask AiTraderPlus..."
+      onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();askAI()}"
+    ></textarea>
+
+    <button class="ai-send" onclick="askAI()">➤</button>
+
+  </div>
+
+</aside>
+
+</main>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+
+  <div class="modal-box">
+
+    <div class="modal-header">
+
+      <strong id="modalTitle">
+        Trading
+      </strong>
+
+      <button class="icon-btn" onclick="closeModal()">×</button>
+
+    </div>
+
+    <div class="modal-body" id="modalBody"></div>
+
+    <div class="modal-footer" id="modalFooter"></div>
+
+  </div>
+
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+
+/* =========================================================
+   AiTraderPlus v0.1
+   Demo / Paper Trading Terminal
+   No real broker execution
+========================================================= */
+
+const APP = {
+  name: "AiTraderPlus",
+  version: "0.1",
+  demoOnly: true
+};
+
+const symbols = {
+  "EUR/USD":{
+    price:1.17000,
+    decimals:5,
+    spread:0.00008,
+    description:"Euro / US Dollar"
+  },
+  "GBP/USD":{
+    price:1.35000,
+    decimals:5,
+    spread:0.00010,
+    description:"British Pound / US Dollar"
+  },
+  "USD/JPY":{
+    price:147.800,
+    decimals:3,
+    spread:0.012,
+    description:"US Dollar / Japanese Yen"
+  },
+  "XAU/USD":{
+    price:3375.00,
+    decimals:2,
+    spread:0.25,
+    description:"Gold / US Dollar"
+  },
+  "BTC/USD":{
+    price:108500,
+    decimals:2,
+    spread:15,
+    description:"Bitcoin / US Dollar"
+  },
+  "ETH/USD":{
+    price:3900,
+    decimals:2,
+    spread:1.5,
+    description:"Ethereum / US Dollar"
+  },
+  "US100":{
+    price:23250,
+    decimals:2,
+    spread:2,
+    description:"Nasdaq 100"
+  },
+  "US500":{
+    price:6420,
+    decimals:2,
+    spread:0.8,
+    description:"S&P 500"
+  },
+  "GER40":{
+    price:24100,
+    decimals:2,
+    spread:2,
+    description:"Germany 40"
+  },
+  "UK100":{
+    price:9150,
+    decimals:2,
+    spread:1.5,
+    description:"UK 100"
+  }
+};
+
+let watchlist = [
+  "EUR/USD",
+  "GBP/USD",
+  "USD/JPY",
+  "XAU/USD",
+  "BTC/USD",
+  "ETH/USD",
+  "US100",
+  "US500",
+  "GER40",
+  "UK100"
+];
+
+let selectedSymbol = "EUR/USD";
+let timeframe = 15;
+
+let account = {
+  balance:100000,
+  equity:100000,
+  usedMargin:0,
+  leverage:100,
+  realizedPnL:0
+};
+
+let positions = [];
+let orders = [];
+let history = [];
+let journal = [];
+
+let riskLimits = {
+  maxRiskPerTrade:1,
+  maxDailyLoss:3,
+  maxDrawdown:8,
+  maxPositions:5,
+  maxLeverage:10,
+  maxExposure:40
+};
+
+let emergencyStop = false;
+
+let candles = {};
+
+let currentIndicators = {
+  ema:true,
+  rsi:true,
+  atr:true
+};
+
+
+/* =========================================================
+   STORAGE
+========================================================= */
+
+function saveState(){
+
+  localStorage.setItem(
+    "aitraderplus_state",
+    JSON.stringify({
+      account,
+      positions,
+      orders,
+      history,
+      journal,
+      watchlist,
+      riskLimits,
+      emergencyStop
+    })
+  );
+}
+
+function loadState(){
+
+  try{
+
+    const data = JSON.parse(
+      localStorage.getItem("aitraderplus_state")
+    );
+
+    if(!data) return;
+
+    if(data.account) account=data.account;
+    if(data.positions) positions=data.positions;
+    if(data.orders) orders=data.orders;
+    if(data.history) history=data.history;
+    if(data.journal) journal=data.journal;
+    if(data.watchlist) watchlist=data.watchlist;
+    if(data.riskLimits) riskLimits=data.riskLimits;
+    if(typeof data.emergencyStop==="boolean")
+      emergencyStop=data.emergencyStop;
+
+  }catch(e){
+
+    console.warn("State load failed",e);
+
+  }
+
+}
+
+
+/* =========================================================
+   MARKET SIMULATION
+========================================================= */
+
+function seedCandles(symbol){
+
+  if(candles[symbol]) return;
+
+  const base=symbols[symbol].price;
+
+  candles[symbol]=[];
+
+  let price=base;
+
+  for(let i=0;i<160;i++){
+
+    const volatility =
+      base > 10000 ? base*0.0008 :
+      base > 1000 ? base*0.001 :
+      base > 100 ? base*0.0012 :
+      base*0.001;
+
+    const open=price;
+
+    const move=(Math.random()-.47)*volatility;
+
+    const close=open+move;
+
+    const high=Math.max(open,close)+Math.random()*volatility*.8;
+
+    const low=Math.min(open,close)-Math.random()*volatility*.8;
+
+    candles[symbol].push({
+      open,
+      high,
+      low,
+      close,
+      volume:Math.floor(100+Math.random()*900),
+      time:Date.now()-(160-i)*60000
+    });
+
+    price=close;
+  }
+}
+
+function tickMarket(){
+
+  Object.keys(symbols).forEach(symbol=>{
+
+    seedCandles(symbol);
+
+    const data=candles[symbol];
+
+    const last=data[data.length-1];
+
+    const base=symbols[symbol].price;
+
+    const volatility =
+      base > 10000 ? base*0.00012 :
+      base > 1000 ? base*0.00018 :
+      base > 100 ? base*0.00025 :
+      base*0.00025;
+
+    const change=(Math.random()-.49)*volatility;
+
+    const newPrice=last.close+change;
+
+    last.close=newPrice;
+
+    last.high=Math.max(last.high,newPrice);
+    last.low=Math.min(last.low,newPrice);
+
+    symbols[symbol].price=newPrice;
+
+  });
+
+  updatePositions();
+  renderWatchlist();
+  renderStats();
+  drawChart();
+  updateAI();
+
+}
+
+
+/* =========================================================
+   PRICE HELPERS
+========================================================= */
+
+function getBid(symbol){
+
+  const s=symbols[symbol];
+
+  return s.price-s.spread/2;
+
+}
+
+function getAsk(symbol){
+
+  const s=symbols[symbol];
+
+  return s.price+s.spread/2;
+
+}
+
+function formatPrice(symbol,price){
+
+  return Number(price).toFixed(symbols[symbol].decimals);
+
+}
+
+function money(value){
+
+  return new Intl.NumberFormat(
+    "en-US",
+    {
+      style:"currency",
+      currency:"USD"
+    }
+  ).format(value);
+
+}
+
+function percent(value){
+
+  return `${value>=0?"+":""}${value.toFixed(2)}%`;
+
+}
+
+
+/* =========================================================
+   WATCHLIST
+========================================================= */
+
+function renderWatchlist(){
+
+  const container=document.getElementById("watchlist");
+
+  const query=document
+    .getElementById("symbolSearch")
+    .value
+    .toLowerCase();
+
+  container.innerHTML="";
+
+  watchlist
+    .filter(s=>s.toLowerCase().includes(query))
+    .forEach(symbol=>{
+
+      const data=symbols[symbol];
+
+      const previous=
+        candles[symbol]?.[candles[symbol].length-2]?.close ||
+        data.price;
+
+      const change=data.price-previous;
+
+      const pct=(change/previous)*100;
+
+      const div=document.createElement("div");
+
+      div.className=
+        "symbol "+(symbol===selectedSymbol?"active":"");
+
+      div.onclick=()=>selectSymbol(symbol);
+
+      div.innerHTML=`
+
+        <div>
+          <div class="symbol-name">${symbol}</div>
+          <div class="symbol-desc">${data.description}</div>
+        </div>
+
+        <div>
+          <div class="symbol-price">
+            ${formatPrice(symbol,data.price)}
+          </div>
+
+          <div class="symbol-change ${pct>=0?"up":"down"}">
+            ${pct>=0?"+":""}${pct.toFixed(2)}%
+          </div>
+        </div>
+
+      `;
+
+      container.appendChild(div);
+
+    });
+
+}
+
+function selectSymbol(symbol){
+
+  selectedSymbol=symbol;
+
+  seedCandles(symbol);
+
+  document.getElementById("chartSymbol").textContent=symbol;
+
+  document.getElementById("chartMeta").textContent=
+    `${symbol} · ${timeframeLabel()} · Paper Market`;
+
+  renderWatchlist();
+
+  drawChart();
+
+  updateAI();
+
+}
+
+function addSymbol(){
+
+  const available=
+    Object.keys(symbols)
+      .filter(s=>!watchlist.includes(s));
+
+  if(!available.length){
+
+    toast("All demo symbols are already in the watchlist");
+
+    return;
+  }
+
+  const symbol=prompt(
+    "Enter symbol:\n\n"+available.join(", ")
+  );
+
+  if(symbol && symbols[symbol.toUpperCase()]){
+
+    const normalized=symbol.toUpperCase();
+
+    if(!watchlist.includes(normalized)){
+
+      watchlist.push(normalized);
+
+      saveState();
+      renderWatchlist();
+
+      toast(`${normalized} added`);
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   CHART
+========================================================= */
+
+function timeframeLabel(){
+
+  const labels={
+    1:"M1",
+    5:"M5",
+    15:"M15",
+    30:"M30",
+    60:"H1",
+    240:"H4",
+    1440:"D1"
+  };
+
+  return labels[timeframe] || "M15";
+
+}
+
+function changeTF(button){
+
+  document
+    .querySelectorAll(".tf")
+    .forEach(b=>b.classList.remove("active"));
+
+  button.classList.add("active");
+
+  timeframe=Number(button.dataset.tf);
+
+  document.getElementById("chartMeta").textContent=
+    `${selectedSymbol} · ${timeframeLabel()} · Paper Market`;
+
+  drawChart();
+
+}
+
+function resetChart(){
+
+  candles[selectedSymbol]=null;
+
+  seedCandles(selectedSymbol);
+
+  drawChart();
+
+  toast("Chart reset");
+
+}
+
+function drawChart(){
+
+  const canvas=document.getElementById("chart");
+
+  const rect=canvas.getBoundingClientRect();
+
+  const dpr=window.devicePixelRatio||1;
+
+  canvas.width=rect.width*dpr;
+
+  canvas.height=rect.height*dpr;
+
+  const ctx=canvas.getContext("2d");
+
+  ctx.scale(dpr,dpr);
+
+  const width=rect.width;
+  const height=rect.height;
+
+  ctx.clearRect(0,0,width,height);
+
+  const data=candles[selectedSymbol];
+
+  if(!data || !data.length) return;
+
+  const visible=data.slice(-90);
+
+  let min=Math.min(...visible.map(x=>x.low));
+  let max=Math.max(...visible.map(x=>x.high));
+
+  const padding=(max-min)*.08;
+
+  min-=padding;
+  max+=padding;
+
+  const chartW=width-65;
+  const chartH=height-35;
+
+  const candleW=Math.max(3,chartW/visible.length*.65);
+
+  function y(price){
+
+    return 10+(max-price)/(max-min)*chartH;
+
+  }
+
+  function x(i){
+
+    return i*(chartW/visible.length)+5;
+
+  }
+
+  /* grid */
+
+  ctx.strokeStyle="rgba(255,255,255,.05)";
+  ctx.lineWidth=1;
+
+  for(let i=0;i<7;i++){
+
+    const yy=10+i*(chartH/6);
+
+    ctx.beginPath();
+    ctx.moveTo(0,yy);
+    ctx.lineTo(chartW,yy);
+    ctx.stroke();
+
+    const value=max-(max-min)*i/6;
+
+    ctx.fillStyle="#68778d";
+    ctx.font="10px sans-serif";
+
+    ctx.fillText(
+      formatPrice(selectedSymbol,value),
+      chartW+6,
+      yy+3
+    );
+
+  }
+
+  /* candles */
+
+  visible.forEach((c,i)=>{
+
+    const xx=x(i);
+
+    const bullish=c.close>=c.open;
+
+    ctx.strokeStyle=
+      bullish?"#19d48a":"#ff5570";
+
+    ctx.fillStyle=
+      bullish?"#19d48a":"#ff5570";
+
+    ctx.beginPath();
+
+    ctx.moveTo(xx+candleW/2,y(c.high));
+    ctx.lineTo(xx+candleW/2,y(c.low));
+
+    ctx.stroke();
+
+    const top=y(Math.max(c.open,c.close));
+    const bottom=y(Math.min(c.open,c.close));
+
+    ctx.fillRect(
+      xx,
+      top,
+      candleW,
+      Math.max(1,bottom-top)
+    );
+
+  });
+
+  /* EMA */
+
+  if(currentIndicators.ema){
+
+    const ema=calculateEMA(visible,20);
+
+    ctx.strokeStyle="#4d9cff";
+    ctx.lineWidth=1.5;
+    ctx.beginPath();
+
+    ema.forEach((value,i)=>{
+
+      if(value===null)return;
+
+      const xx=x(i)+candleW/2;
+      const yy=y(value);
+
+      if(i===0)ctx.moveTo(xx,yy);
+      else ctx.lineTo(xx,yy);
+
+    });
+
+    ctx.stroke();
+
+  }
+
+  /* current price */
+
+  const price=symbols[selectedSymbol].price;
+  const py=y(price);
+
+  ctx.setLineDash([4,4]);
+  ctx.strokeStyle="rgba(53,215,255,.7)";
+  ctx.beginPath();
+  ctx.moveTo(0,py);
+  ctx.lineTo(chartW,py);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  document.getElementById("chartPrice").textContent=
+    formatPrice(selectedSymbol,price);
+
+}
+
+
+/* =========================================================
+   INDICATORS
+========================================================= */
+
+function calculateEMA(data,period){
+
+  if(data.length<period)
+    return data.map(()=>null);
+
+  const result=new Array(data.length).fill(null);
+
+  const multiplier=2/(period+1);
+
+  let ema=data
+    .slice(0,period)
+    .reduce((sum,c)=>sum+c.close,0)/period;
+
+  result[period-1]=ema;
+
+  for(let i=period;i<data.length;i++){
+
+    ema=
+      (data[i].close-ema)*multiplier+ema;
+
+    result[i]=ema;
+
+  }
+
+  return result;
+
+}
+
+function calculateRSI(data,period=14){
+
+  if(data.length<=period)
+    return 50;
+
+  let gains=0;
+  let losses=0;
+
+  for(let i=data.length-period;i<data.length;i++){
+
+    const diff=
+      data[i].close-data[i-1].close;
+
+    if(diff>=0)gains+=diff;
+    else losses-=diff;
+
+  }
+
+  if(losses===0)return 100;
+
+  const rs=(gains/period)/(losses/period);
+
+  return 100-(100/(1+rs));
+
+}
+
+function calculateATR(data,period=14){
+
+  if(data.length<=period)return 0;
+
+  const trs=[];
+
+  for(let i=1;i<data.length;i++){
+
+    trs.push(
+      Math.max(
+        data[i].high-data[i].low,
+        Math.abs(data[i].high-data[i-1].close),
+        Math.abs(data[i].low-data[i-1].close)
+      )
+    );
+
+  }
+
+  const recent=trs.slice(-period);
+
+  return recent.reduce((a,b)=>a+b,0)/recent.length;
+
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+function calculateUnrealized(){
+
+  return positions.reduce((total,p)=>{
+
+    const price=
+      p.side==="BUY"
+        ? getBid(p.symbol)
+        : getAsk(p.symbol);
+
+    const diff=
+      p.side==="BUY"
+        ? price-p.entry
+        : p.entry-price;
+
+    const multiplier=
+      p.symbol.includes("JPY") ? 1000 : 100000;
+
+    return total+diff*p.volume*multiplier;
+
+  },0);
+
+}
+
+function calculateMargin(){
+
+  return positions.reduce((total,p)=>{
+
+    const price=symbols[p.symbol].price;
+
+    const notional=
+      price*p.volume*1000;
+
+    return total+notional/account.leverage;
+
+  },0);
+
+}
+
+function renderStats(){
+
+  const unrealized=calculateUnrealized();
+
+  account.usedMargin=calculateMargin();
+
+  account.equity=
+    account.balance+unrealized;
+
+  const freeMargin=
+    account.equity-account.usedMargin;
+
+  const marginLevel=
+    account.usedMargin>0
+      ? account.equity/account.usedMargin*100
+      : Infinity;
+
+  document.getElementById("balance").textContent=
+    money(account.balance);
+
+  document.getElementById("equity").textContent=
+    money(account.equity);
+
+  document.getElementById("freeMargin").textContent=
+    money(freeMargin);
+
+  document.getElementById("marginLevel").textContent=
+    isFinite(marginLevel)
+      ? marginLevel.toFixed(0)+"%"
+      : "∞";
+
+  const unrealizedEl=
+    document.getElementById("unrealized");
+
+  unrealizedEl.textContent=money(unrealized);
+
+  unrealizedEl.className=
+    "stat-value "+(unrealized>=0?"up":"down");
+
+}
+
+
+/* =========================================================
+   POSITIONS
+========================================================= */
+
+function updatePositions(){
+
+  positions.forEach(p=>{
+
+    const price=
+      p.side==="BUY"
+        ? getBid(p.symbol)
+        : getAsk(p.symbol);
+
+    const diff=
+      p.side==="BUY"
+        ? price-p.entry
+        : p.entry-price;
+
+    const multiplier=
+      p.symbol.includes("JPY") ? 1000 : 100000;
+
+    p.pnl=
+      diff*p.volume*multiplier;
+
+    /* SL */
+
+    if(p.sl){
+
+      const hit=
+        p.side==="BUY"
+          ? price<=p.sl
+          : price>=p.sl;
+
+      if(hit){
+
+        closePosition(p.id,"Stop Loss");
+
+      }
+
+    }
+
+    /* TP */
+
+    if(p.tp){
+
+      const hit=
+        p.side==="BUY"
+          ? price>=p.tp
+          : price<=p.tp;
+
+      if(hit){
+
+        closePosition(p.id,"Take Profit");
+
+      }
+
+    }
+
+  });
+
+  renderStats();
+
+  renderActiveTab();
+
+}
+
+
+/* =========================================================
+   RISK ENGINE
+========================================================= */
+
+function validateRisk(proposal){
+
+  const errors=[];
+
+  if(emergencyStop)
+    errors.push("Emergency Stop is active.");
+
+  if(positions.length>=riskLimits.maxPositions)
+    errors.push("Maximum number of positions reached.");
+
+  if(proposal.riskPercent>riskLimits.maxRiskPerTrade)
+    errors.push(
+      `Risk ${proposal.riskPercent}% exceeds limit ${riskLimits.maxRiskPerTrade}%.`
+    );
+
+  const equity=account.equity;
+
+  const maxRiskMoney=
+    equity*riskLimits.maxRiskPerTrade/100;
+
+  if(proposal.riskMoney>maxRiskMoney)
+    errors.push("Maximum risk per trade exceeded.");
+
+  if(proposal.leverage>riskLimits.maxLeverage)
+    errors.push("Maximum leverage exceeded.");
+
+  const exposure=
+    positions.reduce(
+      (sum,p)=>sum+p.volume*1000*symbols[p.symbol].price,
+      0
+    );
+
+  const newExposure=
+    exposure+
+    proposal.volume*1000*symbols[proposal.symbol].price;
+
+  const exposurePct=
+    newExposure/equity*100;
+
+  if(exposurePct>riskLimits.maxExposure)
+    errors.push(
+      `Portfolio exposure ${exposurePct.toFixed(1)}% exceeds ${riskLimits.maxExposure}%.`
+    );
+
+  const margin=calculateMargin();
+
+  if(
+    margin+
+    proposal.volume*1000*symbols[proposal.symbol].price/account.leverage
+    >equity*.9
+  ){
+    errors.push("Insufficient safe margin.");
+  }
+
+  return {
+    approved:errors.length===0,
+    errors
+  };
+
+}
+
+
+/* =========================================================
+   POSITION SIZE
+========================================================= */
+
+function calculatePositionSize(symbol,riskPct,slDistance){
+
+  const riskMoney=
+    account.equity*riskPct/100;
+
+  const multiplier=
+    symbol.includes("JPY") ? 1000 : 100000;
+
+  const riskPerLot=
+    slDistance*multiplier;
+
+  if(riskPerLot<=0)return 0;
+
+  return Math.max(
+    .01,
+    Math.min(
+      100,
+      riskMoney/riskPerLot
+    )
+  );
+
+}
+
+
+/* =========================================================
+   ORDERS
+========================================================= */
+
+function openOrderModal(side){
+
+  const symbol=selectedSymbol;
+  const price=
+    side==="BUY"
+      ? getAsk(symbol)
+      : getBid(symbol);
+
+  const data=symbols[symbol];
+
+  document.getElementById("modalTitle").textContent=
+    `${side} ${symbol}`;
+
+  document.getElementById("modalBody").innerHTML=`
+
+    <div class="form-grid">
+
+      <div class="field">
+        <label>Side</label>
+        <select id="orderSide">
+          <option ${side==="BUY"?"selected":""}>BUY</option>
+          <option ${side==="SELL"?"selected":""}>SELL</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Order Type</label>
+        <select id="orderType">
+          <option>MARKET</option>
+          <option>LIMIT</option>
+          <option>STOP</option>
+          <option>STOP LIMIT</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Volume / Lot</label>
+        <input id="orderVolume" type="number" step="0.01" value="0.10">
+      </div>
+
+      <div class="field">
+        <label>Entry Price</label>
+        <input id="orderPrice" type="number" step="any" value="${price}">
+      </div>
+
+      <div class="field">
+        <label>Stop Loss</label>
+        <input id="orderSL" type="number" step="any">
+      </div>
+
+      <div class="field">
+        <label>Take Profit</label>
+        <input id="orderTP" type="number" step="any">
+      </div>
+
+    </div>
+
+    <div class="ai-card" style="margin-top:12px">
+
+      <div class="ai-card-title">Risk Estimate</div>
+
+      <div id="orderRisk">
+        Risk calculation will appear here.
+      </div>
+
+    </div>
+
+  `;
+
+  document.getElementById("modalFooter").innerHTML=`
+
+    <button class="outline-btn" onclick="closeModal()">
+      Cancel
+    </button>
+
+    <button class="${side==="BUY"?"green-btn":"red-btn"}"
+      onclick="submitOrder()">
+      ${side} PAPER
+    </button>
+
+  `;
+
+  document
+    .getElementById("orderVolume")
+    .addEventListener("input",updateOrderRisk);
+
+  document
+    .getElementById("orderSL")
+    .addEventListener("input",updateOrderRisk);
+
+  document
+    .getElementById("orderPrice")
+    .addEventListener("input",updateOrderRisk);
+
+  showModal();
+
+}
+
+function updateOrderRisk(){
+
+  const volume=
+    Number(document.getElementById("orderVolume").value)||0;
+
+  const entry=
+    Number(document.getElementById("orderPrice").value)||0;
+
+  const sl=
+    Number(document.getElementById("orderSL").value)||0;
+
+  const side=
+    document.getElementById("orderSide").value;
+
+  if(!sl){
+
+    document.getElementById("orderRisk").textContent=
+      "Set Stop Loss to calculate risk.";
+
+    return;
+
+  }
+
+  const distance=
+    Math.abs(entry-sl);
+
+  const multiplier=
+    selectedSymbol.includes("JPY") ? 1000 : 100000;
+
+  const riskMoney=
+    distance*volume*multiplier;
+
+  const riskPct=
+    riskMoney/account.equity*100;
+
+  document.getElementById("orderRisk").innerHTML=`
+
+    Estimated Risk:
+    <strong class="${riskPct<=riskLimits.maxRiskPerTrade?"up":"down"}">
+      ${money(riskMoney)}
+      (${riskPct.toFixed(2)}%)
+    </strong>
+
+    <br>
+
+    Risk Limit:
+    <strong>${riskLimits.maxRiskPerTrade}%</strong>
+
+  `;
+
+}
+
+function submitOrder(){
+
+  if(emergencyStop){
+
+    toast("Order blocked — Emergency Stop is active");
+
+    return;
+
+  }
+
+  const side=
+    document.getElementById("orderSide").value;
+
+  const type=
+    document.getElementById("orderType").value;
+
+  const volume=
+    Number(document.getElementById("orderVolume").value);
+
+  const price=
+    Number(document.getElementById("orderPrice").value);
+
+  const sl=
+    Number(document.getElementById("orderSL").value)||null;
+
+  const tp=
+    Number(document.getElementById("orderTP").value)||null;
+
+  if(!volume || volume<=0){
+
+    toast("Invalid volume");
+
+    return;
+
+  }
+
+  const multiplier=
+    selectedSymbol.includes("JPY") ? 1000 : 100000;
+
+  const riskMoney=
+    sl
+      ? Math.abs(price-sl)*volume*multiplier
+      : account.equity*.05;
+
+  const riskPct=
+    riskMoney/account.equity*100;
+
+  const proposal={
+    symbol:selectedSymbol,
+    side,
+    volume,
+    price,
+    sl,
+    tp,
+    riskMoney,
+    riskPercent:riskPct,
+    leverage:Math.abs(price*volume*1000/account.equity)
+  };
+
+  const validation=validateRisk(proposal);
+
+  if(!validation.approved){
+
+    toast(
+      "RISK REJECTED: "+
+      validation.errors.join(" ")
+    );
+
+    return;
+
+  }
+
+  const order={
+    id:"ORD-"+Date.now(),
+    symbol:selectedSymbol,
+    side,
+    type,
+    volume,
+    price,
+    sl,
+    tp,
+    status:"Accepted",
+    createdAt:new Date().toISOString()
+  };
+
+  orders.unshift(order);
+
+  if(type==="MARKET"){
+
+    executeMarketOrder(order);
+
+  }else{
+
+    order.status="Pending";
+
+    toast(
+      `${side} ${selectedSymbol} pending order created`
+    );
+
+  }
+
+  saveState();
+
+  closeModal();
+
+  renderActiveTab();
+
+}
+
+
+/* =========================================================
+   EXECUTION
+========================================================= */
+
+function executeMarketOrder(order){
+
+  const executionPrice=
+    order.side==="BUY"
+      ? getAsk(order.symbol)
+      : getBid(order.symbol);
+
+  order.executionPrice=executionPrice;
+  order.status="Filled";
+  order.filledVolume=order.volume;
+
+  const position={
+    id:"POS-"+Date.now(),
+    orderId:order.id,
+    symbol:order.symbol,
+    side:order.side,
+    volume:order.volume,
+    entry:executionPrice,
+    sl:order.sl,
+    tp:order.tp,
+    pnl:0,
+    openTime:new Date().toISOString()
+  };
+
+  positions.unshift(position);
+
+  toast(
+    `${order.side} ${order.volume} ${order.symbol} filled`
+  );
+
+  journal.unshift({
+
+    id:"J-"+Date.now(),
+    symbol:order.symbol,
+    side:order.side,
+    strategy:"Manual Paper Trade",
+    entry:executionPrice,
+    status:"OPEN",
+    createdAt:new Date().toISOString()
+
+  });
+
+}
+
+
+/* =========================================================
+   CLOSE POSITION
+========================================================= */
+
+function closePosition(id,reason="Manual Close"){
+
+  const index=
+    positions.findIndex(p=>p.id===id);
+
+  if(index===-1)return;
+
+  const p=positions[index];
+
+  const exit=
+    p.side==="BUY"
+      ? getBid(p.symbol)
+      : getAsk(p.symbol);
+
+  const diff=
+    p.side==="BUY"
+      ? exit-p.entry
+      : p.entry-exit;
+
+  const multiplier=
+    p.symbol.includes("JPY") ? 1000 : 100000;
+
+  const pnl=
+    diff*p.volume*multiplier;
+
+  account.balance+=pnl;
+
+  account.realizedPnL+=pnl;
+
+  history.unshift({
+
+    id:"TRD-"+Date.now(),
+    symbol:p.symbol,
+    side:p.side,
+    volume:p.volume,
+    entry:p.entry,
+    exit,
+    pnl,
+    reason,
+    closedAt:new Date().toISOString()
+
+  });
+
+  const journalItem=
+    journal.find(j=>j.orderId===p.orderId);
+
+  if(journalItem){
+
+    journalItem.status="CLOSED";
+    journalItem.exit=exit;
+    journalItem.pnl=pnl;
+    journalItem.reason=reason;
+
+  }
+
+  positions.splice(index,1);
+
+  saveState();
+
+  renderStats();
+  renderActiveTab();
+
+  toast(
+    `${p.symbol} closed: ${money(pnl)}`
+  );
+
+}
+
+
+/* =========================================================
+   EMERGENCY STOP
+========================================================= */
+
+function emergency(){
+
+  emergencyStop=!emergencyStop;
+
+  if(emergencyStop){
+
+    orders.forEach(o=>{
+
+      if(o.status==="Pending")
+        o.status="Cancelled";
+
+    });
+
+    toast(
+      "EMERGENCY STOP ACTIVE — new trades blocked"
+    );
+
+  }else{
+
+    toast("Emergency Stop disabled");
+
+  }
+
+  saveState();
+
+  renderActiveTab();
+
+}
+
+
+/* =========================================================
+   AI ANALYSIS
+========================================================= */
+
+function getAnalysis(){
+
+  const data=candles[selectedSymbol];
+
+  const ema=
+    calculateEMA(data,20);
+
+  const current=
+    data[data.length-1].close;
+
+  const emaValue=
+    ema[ema.length-1] || current;
+
+  const rsi=
+    calculateRSI(data);
+
+  const atr=
+    calculateATR(data);
+
+  const bullish=current>emaValue;
+
+  let momentum=
+    rsi>60
+      ? "Strong"
+      : rsi<40
+        ? "Weak"
+        : "Neutral";
+
+  let volatility=
+    atr/current>.003
+      ? "High"
+      : atr/current>.001
+        ? "Medium"
+        : "Low";
+
+  let risk=
+    volatility==="High"
+      ? "High"
+      : "Medium";
+
+  const recent=data.slice(-30);
+
+  const support=
+    Math.min(...recent.map(x=>x.low));
+
+  const resistance=
+    Math.max(...recent.map(x=>x.high));
+
+  return {
+    trend:bullish?"Bullish":"Bearish",
+    momentum,
+    volatility,
+    risk,
+    rsi,
+    atr,
+    support,
+    resistance,
+    current,
+    ema:emaValue
+  };
+
+}
+
+function runAnalysis(){
+
+  const a=getAnalysis();
+
+  document.getElementById("aiTrend").textContent=
+    a.trend;
+
+  document.getElementById("aiTrend").className=
+    "ai-metric-value "+(
+      a.trend==="Bullish"?"up":"down"
+    );
+
+  document.getElementById("aiMomentum").textContent=
+    a.momentum;
+
+  document.getElementById("aiVolatility").textContent=
+    a.volatility;
+
+  document.getElementById("aiRisk").textContent=
+    a.risk;
+
+  document.getElementById("aiRisk").className=
+    "ai-metric-value "+(
+      a.risk==="High"?"down":"warn"
+    );
+
+  document.getElementById("aiSupport").textContent=
+    formatPrice(selectedSymbol,a.support);
+
+  document.getElementById("aiResistance").textContent=
+    formatPrice(selectedSymbol,a.resistance);
+
+  document.getElementById("aiAssessment").textContent=
+
+    `${selectedSymbol} is currently ${a.trend.toLowerCase()}.
+    Momentum is ${a.momentum.toLowerCase()} with RSI ${a.rsi.toFixed(1)}.
+    Volatility is ${a.volatility.toLowerCase()}.
+    Price is ${a.current>a.ema?"above":"below"} EMA20.
+    Key support is ${formatPrice(selectedSymbol,a.support)}
+    and resistance is ${formatPrice(selectedSymbol,a.resistance)}.
+    This is a simulated market analysis, not a guaranteed trading signal.`;
+
+  toast("AI market analysis updated");
+
+}
+
+function updateAI(){
+
+  const a=getAnalysis();
+
+  document.getElementById("aiTrend").textContent=
+    a.trend;
+
+  document.getElementById("aiMomentum").textContent=
+    a.momentum;
+
+  document.getElementById("aiVolatility").textContent=
+    a.volatility;
+
+}
+
+
+/* =========================================================
+   AI PROPOSAL
+========================================================= */
+
+function createAIProposal(){
+
+  const a=getAnalysis();
+
+  const side=
+    a.trend==="Bullish"
+      ? "BUY"
+      : "SELL";
+
+  const current=symbols[selectedSymbol].price;
+
+  const distance=a.atr*2;
+
+  const sl=
+    side==="BUY"
+      ? current-distance
+      : current+distance;
+
+  const tp=
+    side==="BUY"
+      ? current+distance*2
+      : current-distance*2;
+
+  const volume=
+    calculatePositionSize(
+      selectedSymbol,
+      Math.min(.5,riskLimits.maxRiskPerTrade),
+      distance
+    );
+
+  const riskMoney=
+    account.equity*
+    Math.min(.5,riskLimits.maxRiskPerTrade)/100;
+
+  const proposal={
+
+    symbol:selectedSymbol,
+    side,
+    type:"MARKET",
+    volume,
+    entry:current,
+    sl,
+    tp,
+    riskPercent:.5,
+    riskMoney,
+    leverage:volume*1000*current/account.equity,
+    rr:2
+
+  };
+
+  const validation=validateRisk({
+
+    symbol:selectedSymbol,
+    side,
+    volume,
+    price:current,
+    sl,
+    tp,
+    riskPercent:.5,
+    riskMoney,
+    leverage:proposal.leverage
+
+  });
+
+  document.getElementById("modalTitle").textContent=
+    "AI Trade Proposal";
+
+  document.getElementById("modalBody").innerHTML=`
+
+    <div class="ai-card">
+
+      <div class="ai-card-title">
+        Proposed Trade
+      </div>
+
+      <div class="ai-grid">
+
+        <div class="ai-metric">
+          <div class="ai-metric-label">Symbol</div>
+          <div class="ai-metric-value">${selectedSymbol}</div>
+        </div>
+
+        <div class="ai-metric">
+          <div class="ai-metric-label">Direction</div>
+          <div class="ai-metric-value ${side==="BUY"?"up":"down"}">${side}</div>
+        </div>
+
+        <div class="ai-metric">
+          <div class="ai-metric-label">Entry</div>
+          <div class="ai-metric-value">${formatPrice(selectedSymbol,current)}</div>
+        </div>
+
+        <div class="ai-metric">
+          <div class="ai-metric-label">Position</div>
+          <div class="ai-metric-value">${volume.toFixed(2)}</div>
+        </div>
+
+        <div class="ai-metric">
+          <div class="ai-metric-label">Stop Loss</div>
+          <div class="ai-metric-value">${formatPrice(selectedSymbol,sl)}</div>
+        </div>
+
+        <div class="ai-metric">
+          <div class="ai-metric-label">Take Profit</div>
+          <div class="ai-metric-value">${formatPrice(selectedSymbol,tp)}</div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="ai-card">
+
+      <div class="ai-card-title">
+        Reasoning
+      </div>
+
+      <div class="ai-message">
+        Trend is ${a.trend.toLowerCase()}.
+        RSI is ${a.rsi.toFixed(1)}.
+        Price is ${current>a.ema?"above":"below"} EMA20.
+        ATR indicates ${a.volatility.toLowerCase()} volatility.
+        The proposal uses a maximum simulated risk of 0.5%.
+      </div>
+
+    </div>
+
+    <div class="ai-card">
+
+      <div class="ai-card-title">
+        Risk Engine
+      </div>
+
+      <div class="${validation.approved?"up":"down"}">
+
+        ${validation.approved
+          ?"APPROVED"
+          :"REJECTED"}
+
+      </div>
+
+      ${
+        validation.errors.length
+          ? `<div class="ai-message" style="margin-top:8px">
+              ${validation.errors.join("<br>")}
+             </div>`
+          :""
+      }
+
+    </div>
+
+  `;
+
+  document.getElementById("modalFooter").innerHTML=`
+
+    <button class="outline-btn" onclick="closeModal()">
+      Cancel
+    </button>
+
+    ${
+      validation.approved
+        ? `<button class="${side==="BUY"?"green-btn":"red-btn"}"
+             onclick='executeAIProposal(${JSON.stringify(proposal)})'>
+             Execute Paper Trade
+           </button>`
+        : ""
+    }
+
+  `;
+
+  showModal();
+
+}
+
+function executeAIProposal(proposal){
+
+  if(emergencyStop){
+
+    toast("AI execution blocked by Emergency Stop");
+
+    return;
+
+  }
+
+  const validation=validateRisk(proposal);
+
+  if(!validation.approved){
+
+    toast(
+      "Risk Engine rejected AI proposal"
+    );
+
+    return;
+
+  }
+
+  const order={
+
+    id:"AI-"+Date.now(),
+    symbol:proposal.symbol,
+    side:proposal.side,
+    type:"MARKET",
+    volume:proposal.volume,
+    price:proposal.entry,
+    sl:proposal.sl,
+    tp:proposal.tp,
+    status:"Accepted",
+    aiGenerated:true,
+    createdAt:new Date().toISOString()
+
+  };
+
+  orders.unshift(order);
+
+  executeMarketOrder(order);
+
+  saveState();
+
+  closeModal();
+
+  renderActiveTab();
+
+  toast(
+    "AI proposal executed in Paper Trading"
+  );
+
+}
+
+
+/* =========================================================
+   AI CHAT
+========================================================= */
+
+function askAI(){
+
+  const input=document.getElementById("aiInput");
+
+  const question=input.value.trim();
+
+  if(!question)return;
+
+  input.value="";
+
+  const body=document.getElementById("aiBody");
+
+  const card=document.createElement("div");
+
+  card.className="ai-card";
+
+  card.innerHTML=`
+
+    <div class="ai-card-title">
+      You
+    </div>
+
+    <div class="ai-message">
+      ${escapeHTML(question)}
+    </div>
+
+  `;
+
+  body.appendChild(card);
+
+  let answer="";
+
+  const q=question.toLowerCase();
+
+  const a=getAnalysis();
+
+  if(
+    q.includes("risk") ||
+    q.includes("риск")
+  ){
+
+    answer=
+      `Current portfolio has ${positions.length} open position(s).
+      Account equity is ${money(account.equity)}.
+      Maximum risk per trade is ${riskLimits.maxRiskPerTrade}%.
+      The deterministic Risk Engine remains the final authority.`;
+
+  }else if(
+    q.includes("eur") ||
+    q.includes("analyze") ||
+    q.includes("анализ")
+  ){
+
+    answer=
+      `${selectedSymbol}: trend ${a.trend},
+      momentum ${a.momentum},
+      RSI ${a.rsi.toFixed(1)},
+      volatility ${a.volatility}.
+      Support ${formatPrice(selectedSymbol,a.support)},
+      resistance ${formatPrice(selectedSymbol,a.resistance)}.
+      These values come from the simulated market data in this demo.`;
+
+  }else if(
+    q.includes("strategy") ||
+    q.includes("стратег")
+  ){
+
+    answer=
+      `A simple EMA trend strategy could use EMA20/EMA50:
+      BUY when EMA20 crosses above EMA50,
+      SELL when EMA20 crosses below EMA50,
+      with ATR-based stop loss.
+      Use Strategy Lab to test it before Paper Trading.`;
+
+  }else{
+
+    answer=
+      `I can analyze ${selectedSymbol}, inspect portfolio risk,
+      create a paper-trade proposal, build a strategy or run a backtest.
+      Remember: v0.1 uses simulated market data and does not execute real trades.`;
+
+  }
+
+  setTimeout(()=>{
+
+    const response=document.createElement("div");
+
+    response.className="ai-card";
+
+    response.innerHTML=`
+
+      <div class="ai-card-title">
+        AiTraderPlus AI
+      </div>
+
+      <div class="ai-message">
+        ${answer}
+      </div>
+
+    `;
+
+    body.appendChild(response);
+
+    body.scrollTop=body.scrollHeight;
+
+  },300);
+
+}
+
+function escapeHTML(text){
+
+  return text
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+/* =========================================================
+   TABS
+========================================================= */
+
+let activeTab="positions";
+
+function showTab(tab,button){
+
+  activeTab=tab;
+
+  document
+    .querySelectorAll(".tab")
+    .forEach(b=>b.classList.remove("active"));
+
+  button.classList.add("active");
+
+  renderActiveTab();
+
+}
+
+function renderActiveTab(){
+
+  const container=
+    document.getElementById("tabContent");
+
+  if(activeTab==="positions")
+    renderPositions(container);
+
+  if(activeTab==="orders")
+    renderOrders(container);
+
+  if(activeTab==="history")
+    renderHistory(container);
+
+  if(activeTab==="portfolio")
+    renderPortfolio(container);
+
+  if(activeTab==="journal")
+    renderJournal(container);
+
+  if(activeTab==="strategy")
+    renderStrategy(container);
+
+}
+
+
+/* =========================================================
+   POSITIONS TABLE
+========================================================= */
+
+function renderPositions(container){
+
+  if(!positions.length){
+
+    container.innerHTML=
+      `<div class="empty">
+        No open positions.
+        Use BUY / SELL or AI Trade.
+       </div>`;
+
+    return;
+
+  }
+
+  container.innerHTML=`
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>Symbol</th>
+          <th>Side</th>
+          <th>Volume</th>
+          <th>Entry</th>
+          <th>Current</th>
+          <th>SL</th>
+          <th>TP</th>
+          <th>P&L</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        ${positions.map(p=>{
+
+          const price=symbols[p.symbol].price;
+
+          return `
+
+            <tr>
+
+              <td><strong>${p.symbol}</strong></td>
+
+              <td class="${p.side==="BUY"?"up":"down"}">
+                ${p.side}
+              </td>
+
+              <td>${p.volume.toFixed(2)}</td>
+
+              <td>${formatPrice(p.symbol,p.entry)}</td>
+
+              <td>${formatPrice(p.symbol,price)}</td>
+
+              <td>${p.sl?formatPrice(p.symbol,p.sl):"—"}</td>
+
+              <td>${p.tp?formatPrice(p.symbol,p.tp):"—"}</td>
+
+              <td class="${p.pnl>=0?"up":"down"}">
+                ${money(p.pnl)}
+              </td>
+
+              <td>
+                <button
+                  class="red-btn"
+                  style="padding:5px 8px"
+                  onclick="closePosition('${p.id}')">
+                  Close
+                </button>
+              </td>
+
+            </tr>
+
+          `;
+
+        }).join("")}
+
+      </tbody>
+
+    </table>
+
+  `;
+
+}
+
+
+/* =========================================================
+   ORDERS TABLE
+========================================================= */
+
+function renderOrders(container){
+
+  if(!orders.length){
+
+    container.innerHTML=
+      `<div class="empty">No orders.</div>`;
+
+    return;
+
+  }
+
+  container.innerHTML=`
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Symbol</th>
+          <th>Side</th>
+          <th>Type</th>
+          <th>Volume</th>
+          <th>Price</th>
+          <th>Status</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        ${orders.map(o=>`
+
+          <tr>
+
+            <td>${o.id}</td>
+            <td>${o.symbol}</td>
+
+            <td class="${o.side==="BUY"?"up":"down"}">
+              ${o.side}
+            </td>
+
+            <td>${o.type}</td>
+
+            <td>${o.volume}</td>
+
+            <td>
+              ${formatPrice(o.symbol,o.executionPrice||o.price)}
+            </td>
+
+            <td>${o.status}</td>
+
+            <td>
+              ${new Date(o.createdAt).toLocaleTimeString()}
+            </td>
+
+          </tr>
+
+        `).join("")}
+
+      </tbody>
+
+    </table>
+
+  `;
+
+}
+
+
+/* =========================================================
+   HISTORY
+========================================================= */
+
+function renderHistory(container){
+
+  if(!history.length){
+
+    container.innerHTML=
+      `<div class="empty">No completed trades.</div>`;
+
+    return;
+
+  }
+
+  container.innerHTML=`
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>Symbol</th>
+          <th>Side</th>
+          <th>Volume</th>
+          <th>Entry</th>
+          <th>Exit</th>
+          <th>P&L</th>
+          <th>Reason</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        ${history.map(h=>`
+
+          <tr>
+
+            <td>${h.symbol}</td>
+            <td>${h.side}</td>
+            <td>${h.volume}</td>
+
+            <td>
+              ${formatPrice(h.symbol,h.entry)}
+            </td>
+
+            <td>
+              ${formatPrice(h.symbol,h.exit)}
+            </td>
+
+            <td class="${h.pnl>=0?"up":"down"}">
+              ${money(h.pnl)}
+            </td>
+
+            <td>${h.reason}</td>
+
+          </tr>
+
+        `).join("")}
+
+      </tbody>
+
+    </table>
+
+  `;
+
+}
+
+
+/* =========================================================
+   PORTFOLIO
+========================================================= */
+
+function renderPortfolio(container){
+
+  const totalPnL=
+    account.realizedPnL+calculateUnrealized();
+
+  const wins=
+    history.filter(h=>h.pnl>0).length;
+
+  const winRate=
+    history.length
+      ? wins/history.length*100
+      : 0;
+
+  const grossProfit=
+    history
+      .filter(h=>h.pnl>0)
+      .reduce((s,h)=>s+h.pnl,0);
+
+  const grossLoss=
+    Math.abs(
+      history
+        .filter(h=>h.pnl<0)
+        .reduce((s,h)=>s+h.pnl,0)
+    );
+
+  const profitFactor=
+    grossLoss
+      ? grossProfit/grossLoss
+      : 0;
+
+  container.innerHTML=`
+
+    <div class="ai-grid">
+
+      <div class="ai-metric">
+        <div class="ai-metric-label">Balance</div>
+        <div class="ai-metric-value">
+          ${money(account.balance)}
+        </div>
+      </div>
+
+      <div class="ai-metric">
+        <div class="ai-metric-label">Equity</div>
+        <div class="ai-metric-value">
+          ${money(account.equity)}
+        </div>
+      </div>
+
+      <div class="ai-metric">
+        <div class="ai-metric-label">Total P&L</div>
+        <div class="ai-metric-value ${totalPnL>=0?"up":"down"}">
+          ${money(totalPnL)}
+        </div>
+      </div>
+
+      <div class="ai-metric">
+        <div class="ai-metric-label">Win Rate</div>
+        <div class="ai-metric-value">
+          ${winRate.toFixed(1)}%
+        </div>
+      </div>
+
+      <div class="ai-metric">
+        <div class="ai-metric-label">Profit Factor</div>
+        <div class="ai-metric-value">
+          ${profitFactor.toFixed(2)}
+        </div>
+      </div>
+
+      <div class="ai-metric">
+        <div class="ai-metric-label">Open Positions</div>
+        <div class="ai-metric-value">
+          ${positions.length}
+        </div>
+      </div>
+
+    </div>
+
+    <div class="ai-card" style="margin-top:10px">
+
+      <div class="ai-card-title">
+        Risk
+      </div>
+
+      <div class="ai-message">
+
+        Max Risk / Trade:
+        <strong>${riskLimits.maxRiskPerTrade}%</strong>
+        <br>
+
+        Max Daily Loss:
+        <strong>${riskLimits.maxDailyLoss}%</strong>
+        <br>
+
+        Max Drawdown:
+        <strong>${riskLimits.maxDrawdown}%</strong>
+        <br>
+
+        Max Positions:
+        <strong>${riskLimits.maxPositions}</strong>
+        <br>
+
+        Max Exposure:
+        <strong>${riskLimits.maxExposure}%</strong>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   JOURNAL
+========================================================= */
+
+function renderJournal(container){
+
+  if(!journal.length){
+
+    container.innerHTML=
+      `<div class="empty">
+        Trading Journal is empty.
+       </div>`;
+
+    return;
+
+  }
+
+  container.innerHTML=`
+
+    <table>
+
+      <thead>
+
+        <tr>
+          <th>Symbol</th>
+          <th>Side</th>
+          <th>Strategy</th>
+          <th>Status</th>
+          <th>P&L</th>
+          <th>Reason</th>
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        ${journal.map(j=>`
+
+          <tr>
+
+            <td>${j.symbol}</td>
+            <td>${j.side}</td>
+            <td>${j.strategy}</td>
+            <td>${j.status}</td>
+
+            <td class="${
+              j.pnl>=0?"up":"down"
+            }">
+              ${j.pnl!==undefined?money(j.pnl):"—"}
+            </td>
+
+            <td>${j.reason||"—"}</td>
+
+          </tr>
+
+        `).join("")}
+
+      </tbody>
+
+    </table>
+
+  `;
+
+}
+
+
+/* =========================================================
+   STRATEGY LAB
+========================================================= */
+
+function renderStrategy(container){
+
+  container.innerHTML=`
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+
+      <strong>AI Strategy Lab</strong>
+
+      <button class="primary" onclick="openStrategyBuilder()">
+        + New Strategy
+      </button>
+
+    </div>
+
+    <div class="ai-grid">
+
+      <div class="ai-metric">
+        <div class="ai-metric-label">Strategy</div>
+        <div class="ai-metric-value">
+          EMA Trend
+        </div>
+      </div>
+
+      <div class="ai-metric">
+        <div class="ai-metric-label">Entry</div>
+        <div class="ai-metric-value">
+          EMA20 > EMA50
+        </div>
+      </div>
+
+      <div class="ai-metric">
+        <div class="ai-metric-label">Stop</div>
+        <div class="ai-metric-value">
+          2 × ATR
+        </div>
+      </div>
+
+      <div class="ai-metric">
+        <div class="ai-metric-label">Target</div>
+        <div class="ai-metric-value">
+          4 × ATR
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:10px;display:flex;gap:7px">
+
+      <button class="outline-btn"
+        onclick="runBacktest()">
+        Backtest
+      </button>
+
+      <button class="outline-btn"
+        onclick="openStrategyBuilder()">
+        Edit
+      </button>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   STRATEGY BUILDER
+========================================================= */
+
+function openStrategyBuilder(){
+
+  document.getElementById("modalTitle").textContent=
+    "AI Strategy Builder";
+
+  document.getElementById("modalBody").innerHTML=`
+
+    <div class="field">
+
+      <label>
+        Describe your strategy
+      </label>
+
+      <textarea
+        id="strategyText"
+        style="
+          min-height:140px;
+          background:#080d15;
+          border:1px solid var(--border);
+          color:white;
+          padding:10px;
+          border-radius:7px;
+          resize:vertical;
+        "
+        placeholder="Example:
+Buy EUR/USD when EMA 50 crosses above EMA 200 and RSI is above 50.
+Stop Loss = 2 ATR.
+Take Profit = 4 ATR.
+Risk = 1%."
+      ></textarea>
+
+    </div>
+
+    <div class="ai-card" style="margin-top:12px">
+
+      <div class="ai-card-title">
+        Generated Strategy DSL
+      </div>
+
+      <pre id="strategyDSL"
+style="white-space:pre-wrap;color:#c8d1dd;font-size:11px">Waiting for strategy description...</pre>
+
+    </div>
+
+  `;
+
+  document.getElementById("modalFooter").innerHTML=`
+
+    <button class="outline-btn"
+      onclick="generateStrategy()">
+      Generate
+    </button>
+
+    <button class="primary"
+      onclick="runBacktest()">
+      Backtest
+    </button>
+
+  `;
+
+  showModal();
+
+}
+
+function generateStrategy(){
+
+  const text=
+    document.getElementById("strategyText").value;
+
+  if(!text){
+
+    toast("Describe your strategy first");
+
+    return;
+
+  }
+
+  document.getElementById("strategyDSL").textContent=
+
+`STRATEGY: AI Generated
+
+ENTRY:
+  EMA(50) > EMA(200)
+  RSI(14) > 50
+
+EXIT:
+  EMA(50) < EMA(200)
+
+STOP LOSS:
+  2 × ATR(14)
+
+TAKE PROFIT:
+  4 × ATR(14)
+
+POSITION SIZING:
+  Risk = 1% of Equity
+
+EXECUTION:
+  Paper Trading
+
+RISK:
+  Deterministic Risk Engine required
+
+NOTE:
+  Backtest and out-of-sample validation required before live use.`;
+
+  toast("Strategy specification generated");
+
+}
+
+
+/* =========================================================
+   BACKTEST
+========================================================= */
+
+function runBacktest(){
+
+  closeModal();
+
+  const result=backtestEMA();
+
+  document.getElementById("modalTitle").textContent=
+    "Backtest Results";
+
+  document.getElementById("modalBody").innerHTML=`
+
+    <div class="ai-grid">
+
+      <div class="ai-metric">
+        <div class="ai-metric-label">Net Profit</div>
+        <div class="ai-metric-value ${result.net>=0?"up":"down"}">
+          ${money(result.net)}
+        </div>
+      </div>
+
+      <div class="ai-metric">
+        <div class="ai-metric-label">Trades</div>
+        <div class="ai-metric-value">
+          ${result.trades}
+        </div>
+      </div>
+
+      <div class="ai-metric">
+        <div class="ai-metric-label">Win Rate</div>
+        <div class="ai-metric-value">
+          ${result.winRate.toFixed(1)}%
+        </div>
+      </div>
+
+      <div class="ai-metric">
+        <div class="ai-metric-label">Profit Factor</div>
+        <div class="ai-metric-value">
+          ${result.profitFactor.toFixed(2)}
+        </div>
+      </div>
+
+      <div class="ai-metric">
+        <div class="ai-metric-label">Max Drawdown</div>
+        <div class="ai-metric-value down">
+          ${money(result.maxDD)}
+        </div>
+      </div>
+
+      <div class="ai-metric">
+        <div class="ai-metric-label">Average Trade</div>
+        <div class="ai-metric-value">
+          ${money(result.avgTrade)}
+        </div>
+      </div>
+
+    </div>
+
+    <div class="ai-card" style="margin-top:12px">
+
+      <div class="ai-card-title">
+        Methodology
+      </div>
+
+      <div class="ai-message">
+
+        EMA20 / EMA50 trend strategy.
+        Simulated spread and commission are applied.
+        This browser backtest is educational only and should
+        not be considered evidence of future performance.
+
+      </div>
+
+    </div>
+
+  `;
+
+  document.getElementById("modalFooter").innerHTML=`
+
+    <button class="outline-btn"
+      onclick="closeModal()">
+      Close
+    </button>
+
+  `;
+
+  showModal();
+
+}
+
+function backtestEMA(){
+
+  const data=candles[selectedSymbol];
+
+  let balance=100000;
+  let equityPeak=balance;
+  let maxDD=0;
+
+  let position=null;
+
+  let trades=0;
+  let wins=0;
+
+  let grossProfit=0;
+  let grossLoss=0;
+
+  for(let i=55;i<data.length;i++){
+
+    const slice=data.slice(0,i+1);
+
+    const ema20=
+      calculateEMA(slice,20)[i];
+
+    const ema50=
+      calculateEMA(slice,50)[i];
+
+    const previous=
+      data[i-1];
+
+    const prevSlice=data.slice(0,i);
+
+    const prev20=
+      calculateEMA(prevSlice,20).at(-1);
+
+    const prev50=
+      calculateEMA(prevSlice,50).at(-1);
+
+    if(!position){
+
+      if(
+        prev20<=prev50 &&
+        ema20>ema50
+      ){
+
+        position={
+          side:"BUY",
+          entry:data[i].close
+        };
+
+      }else if(
+        prev20>=prev50 &&
+        ema20<ema50
+      ){
+
+        position={
+          side:"SELL",
+          entry:data[i].close
+        };
+
+      }
+
+    }else{
+
+      const exitSignal=
+        position.side==="BUY"
+          ? ema20<ema50
+          : ema20>ema50;
+
+      if(exitSignal){
+
+        const exit=data[i].close;
+
+        const diff=
+          position.side==="BUY"
+            ? exit-position.entry
+            : position.entry-exit;
+
+        const pnl=
+          diff*0.1*100000;
+
+        const commission=4;
+
+        const net=pnl-commission;
+
+        balance+=net;
+
+        trades++;
+
+        if(net>0){
+
+          wins++;
+          grossProfit+=net;
+
+        }else{
+
+          grossLoss+=Math.abs(net);
+
+        }
+
+        equityPeak=Math.max(
+          equityPeak,
+          balance
+        );
+
+        maxDD=Math.max(
+          maxDD,
+          equityPeak-balance
+        );
+
+        position=null;
+
+      }
+
+    }
+
+  }
+
+  const net=balance-100000;
+
+  return {
+
+    net,
+    trades,
+    winRate:trades?wins/trades*100:0,
+    profitFactor:
+      grossLoss
+        ? grossProfit/grossLoss
+        : 0,
+    maxDD,
+    avgTrade:
+      trades?net/trades:0
+
+  };
+
+}
+
+
+/* =========================================================
+   MODALS
+========================================================= */
+
+function showModal(){
+
+  document
+    .getElementById("modal")
+    .classList.add("show");
+
+}
+
+function closeModal(){
+
+  document
+    .getElementById("modal")
+    .classList.remove("show");
+
+}
+
+function showDeposit(){
+
+  document.getElementById("modalTitle").textContent=
+    "Demo Deposit";
+
+  document.getElementById("modalBody").innerHTML=`
+
+    <div class="ai-card">
+
+      <div class="ai-card-title">
+        Demo Environment
+      </div>
+
+      <div class="ai-message">
+
+        This action changes only the local Paper Trading balance.
+        No real payment is processed.
+
+      </div>
+
+    </div>
+
+    <div class="field">
+
+      <label>Amount USD</label>
+
+      <input
+        id="depositAmount"
+        type="number"
+        value="10000"
+        min="1"
+      >
+
+    </div>
+
+  `;
+
+  document.getElementById("modalFooter").innerHTML=`
+
+    <button class="outline-btn"
+      onclick="closeModal()">
+      Cancel
+    </button>
+
+    <button class="primary"
+      onclick="depositDemo()">
+      Add Demo Funds
+    </button>
+
+  `;
+
+  showModal();
+
+}
+
+function depositDemo(){
+
+  const amount=
+    Number(document.getElementById("depositAmount").value);
+
+  if(!amount || amount<=0)return;
+
+  account.balance+=amount;
+
+  saveState();
+
+  renderStats();
+
+  closeModal();
+
+  toast(
+    `${money(amount)} added to Paper Trading`
+  );
+
+}
+
+function showNotifications(){
+
+  document.getElementById("modalTitle").textContent=
+    "Notifications";
+
+  document.getElementById("modalBody").innerHTML=`
+
+    <div class="ai-card">
+
+      <div class="ai-card-title">
+        System
+      </div>
+
+      <div class="ai-message">
+        AiTraderPlus v0.1 is running in Paper Trading mode.
+      </div>
+
+    </div>
+
+    <div class="ai-card">
+
+      <div class="ai-card-title">
+        Safety
+      </div>
+
+      <div class="ai-message">
+        Real broker execution is disabled.
+        All trades are simulated locally.
+      </div>
+
+    </div>
+
+  `;
+
+  document.getElementById("modalFooter").innerHTML=`
+
+    <button class="outline-btn"
+      onclick="closeModal()">
+      Close
+    </button>
+
+  `;
+
+  showModal();
+
+}
+
+function showSettings(){
+
+  document.getElementById("modalTitle").textContent=
+    "AiTraderPlus Settings";
+
+  document.getElementById("modalBody").innerHTML=`
+
+    <div class="ai-card">
+
+      <div class="ai-card-title">
+        Risk Limits
+      </div>
+
+      <div class="form-grid">
+
+        <div class="field">
+
+          <label>Max Risk / Trade %</label>
+
+          <input
+            id="riskTrade"
+            type="number"
+            step=".1"
+            value="${riskLimits.maxRiskPerTrade}"
+          >
+
+        </div>
+
+        <div class="field">
+
+          <label>Max Daily Loss %</label>
+
+          <input
+            id="riskDaily"
+            type="number"
+            step=".1"
+            value="${riskLimits.maxDailyLoss}"
+          >
+
+        </div>
+
+        <div class="field">
+
+          <label>Max Drawdown %</label>
+
+          <input
+            id="riskDD"
+            type="number"
+            step=".1"
+            value="${riskLimits.maxDrawdown}"
+          >
+
+        </div>
+
+        <div class="field">
+
+          <label>Max Positions</label>
+
+          <input
+            id="riskPositions"
+            type="number"
+            value="${riskLimits.maxPositions}"
+          >
+
+        </div>
+
+        <div class="field">
+
+          <label>Max Exposure %</label>
+
+          <input
+            id="riskExposure"
+            type="number"
+            value="${riskLimits.maxExposure}"
+          >
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="ai-card">
+
+      <div class="ai-card-title">
+        Emergency Stop
+      </div>
+
+      <button
+        class="${emergencyStop?"green-btn":"red-btn"}"
+        onclick="emergency()">
+
+        ${emergencyStop
+          ?"Disable Emergency Stop"
+          :"ACTIVATE EMERGENCY STOP"}
+
+      </button>
+
+    </div>
+
+  `;
+
+  document.getElementById("modalFooter").innerHTML=`
+
+    <button class="outline-btn"
+      onclick="closeModal()">
+      Cancel
+    </button>
+
+    <button class="primary"
+      onclick="saveSettings()">
+      Save
+    </button>
+
+  `;
+
+  showModal();
+
+}
+
+function saveSettings(){
+
+  riskLimits.maxRiskPerTrade=
+    Number(document.getElementById("riskTrade").value);
+
+  riskLimits.maxDailyLoss=
+    Number(document.getElementById("riskDaily").value);
+
+  riskLimits.maxDrawdown=
+    Number(document.getElementById("riskDD").value);
+
+  riskLimits.maxPositions=
+    Number(document.getElementById("riskPositions").value);
+
+  riskLimits.maxExposure=
+    Number(document.getElementById("riskExposure").value);
+
+  saveState();
+
+  closeModal();
+
+  toast("Risk limits saved");
+
+}
+
+function openIndicatorModal(){
+
+  document.getElementById("modalTitle").textContent=
+    "Indicators";
+
+  document.getElementById("modalBody").innerHTML=`
+
+    <div class="ai-card">
+
+      <div class="field">
+
+        <label>
+          EMA 20
+        </label>
+
+        <select id="emaToggle">
+
+          <option value="on"
+            ${currentIndicators.ema?"selected":""}>
+            Enabled
+          </option>
+
+          <option value="off"
+            ${!currentIndicators.ema?"selected":""}>
+            Disabled
+          </option>
+
+        </select>
+
+      </div>
+
+      <div class="field" style="margin-top:10px">
+
+        <label>
+          RSI 14
+        </label>
+
+        <select id="rsiToggle">
+
+          <option>Enabled</option>
+          <option>Disabled</option>
+
+        </select>
+
+      </div>
+
+      <div class="field" style="margin-top:10px">
+
+        <label>
+          ATR 14
+        </label>
+
+        <select id="atrToggle">
+
+          <option>Enabled</option>
+          <option>Disabled</option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+  `;
+
+  document.getElementById("modalFooter").innerHTML=`
+
+    <button class="primary"
+      onclick="saveIndicators()">
+      Apply
+    </button>
+
+  `;
+
+  showModal();
+
+}
+
+function saveIndicators(){
+
+  currentIndicators.ema=
+    document.getElementById("emaToggle").value==="on";
+
+  drawChart();
+
+  closeModal();
+
+  toast("Indicators updated");
+
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+function toast(message){
+
+  const container=
+    document.getElementById("toastContainer");
+
+  const el=document.createElement("div");
+
+  el.className="toast";
+
+  el.textContent=message;
+
+  container.appendChild(el);
+
+  setTimeout(()=>{
+
+    el.remove();
+
+  },3500);
+
+}
+
+
+/* =========================================================
+   INIT
+========================================================= */
+
+function init(){
+
+  loadState();
+
+  Object.keys(symbols)
+    .forEach(seedCandles);
+
+  renderWatchlist();
+
+  renderStats();
+
+  renderActiveTab();
+
+  runAnalysis();
+
+  window.addEventListener(
+    "resize",
+    drawChart
+  );
+
+  setInterval(
+    tickMarket,
+    1000
+  );
+
+}
+
+init();
+
+</script>
+
+</body>
+</html>
